@@ -10,9 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SettingsActivity"></activity>
-        <activity android:name=".DataActivity" />
-        <activity android:name=".ScheduleActivity" />
-        <activity android:name=".DialActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
