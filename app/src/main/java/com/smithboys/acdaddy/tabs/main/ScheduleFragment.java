@@ -21,11 +21,8 @@ public class ScheduleFragment extends Fragment {
         return v;
     }
 
-    public static ScheduleFragment newInstance(String text) {
+    public static ScheduleFragment newInstance() {
         ScheduleFragment f = new ScheduleFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        f.setArguments(b);
         return f;
     }
 }

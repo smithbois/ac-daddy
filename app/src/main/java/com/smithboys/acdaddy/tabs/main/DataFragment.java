@@ -21,11 +21,8 @@ public class DataFragment extends Fragment {
         return v;
     }
 
-    public static DataFragment newInstance(String text) {
+    public static DataFragment newInstance() {
         DataFragment f = new DataFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        f.setArguments(b);
         return f;
     }
 }
