@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.smithboys.acdaddy.R;
 
 public class DataFragment extends Fragment {
@@ -18,6 +19,9 @@ public class DataFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.data_tab_layout, container, false);
+
+        FirebaseDatabase.getInstance().getReference("message").setValue("Yessir");
+
         return v;
     }
 
