@@ -3,6 +3,7 @@
     <color name="black">#1E1D20</color>
     <color name="white">#F4F4F9</color>
     <color name="gray">#505050</color>
-    <color name="red">#EF3054</color>
+    <color name="red">#E71A57</color>
+    <color name="red_faded">#291219</color>
     <color name="blue">#4056F4</color>
 </resources>
