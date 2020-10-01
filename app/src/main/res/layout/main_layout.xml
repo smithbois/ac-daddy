@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/gray"
-            app:tabIndicatorColor="@color/red"
+            app:tabIndicatorColor="@color/default_color"
             app:tabMode="fixed"
             app:tabTextColor="@color/white" />
     </LinearLayout>
