@@ -13,19 +13,11 @@ public class MyFillFormatter implements IFillFormatter {
     private ILineDataSet boundaryDataSet;
 
     public MyFillFormatter() {
-        this((ILineDataSet) null);
+        this(null);
     }
-    //Pass the data set of other line in the Constructor
+    //Pass the dataset of other line in the Constructor
     public MyFillFormatter(ILineDataSet boundaryDataSet) {
         this.boundaryDataSet = boundaryDataSet;
-    }
-
-    public MyFillFormatter(IFillFormatter fillFormatter){
-        this.boundaryDataSet = null;
-    }
-
-    public MyFillFormatter(DefaultFillFormatter fillFormatter){
-        this.boundaryDataSet = null;
     }
 
     @Override

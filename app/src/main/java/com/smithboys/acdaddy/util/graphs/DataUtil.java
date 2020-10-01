@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.smithboys.acdaddy.R;
+import com.smithboys.acdaddy.data.GlobalDataSets;
 
 import java.util.ArrayList;
 
@@ -32,8 +33,11 @@ public class DataUtil {
             set1 = formatDataSet(context, values, 1);
             set2 = formatDataSet(context, values2, 2);
 
-            //set1.setFillFormatter(new MyFillFormatter(set2));
-            //mChart.setRenderer(new MyLineLegendRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler()));
+            GlobalDataSets.setGlobalDataSet1(set1);
+            GlobalDataSets.setGlobalDataSet2(set2);
+
+            set1.setFillFormatter(new MyFillFormatter(set2));
+            mChart.setRenderer(new MyLineLegendRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler()));
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
@@ -55,11 +59,12 @@ public class DataUtil {
         set.setCircleRadius(3f);
         set.setDrawCircleHole(false);
         set.setValueTextSize(9f);
-        set.setDrawFilled(false);
+        set.setDrawFilled(true);
         set.setFormLineWidth(1f);
         set.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
         set.setFormSize(15.f);
-//        set.setFillColor(R.color.blue);
+        set.setFillColor(R.color.blue);
+
 //        if (Utils.getSDKInt() >= 18) {
 //            if (setNumber == 1){
 //                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.fade_blue);
