@@ -11,17 +11,17 @@ import androidx.fragment.app.Fragment;
 
 import com.smithboys.acdaddy.R;
 
-public class DialFragment extends Fragment {
+public class SliderFragment extends Fragment {
 
     SeekBar seekBar;
     TextView textView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.dial_tab_layout, container, false);
+        View v = inflater.inflate(R.layout.slider_tab_layout, container, false);
 
         seekBar = v.findViewById(R.id.seek_bar);
-        textView = v.findViewById(R.id.text_view);
+        textView = v.findViewById(R.id.temp_number);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -44,8 +44,8 @@ public class DialFragment extends Fragment {
         return v;
     }
 
-    public static DialFragment newInstance(){
-        DialFragment f = new DialFragment();
+    public static SliderFragment newInstance(){
+        SliderFragment f = new SliderFragment();
         return f;
     }
 
