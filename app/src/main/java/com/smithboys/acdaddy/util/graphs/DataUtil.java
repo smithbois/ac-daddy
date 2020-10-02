@@ -1,7 +1,6 @@
 package com.smithboys.acdaddy.util.graphs;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 
@@ -15,8 +14,15 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.smithboys.acdaddy.R;
 import com.smithboys.acdaddy.data.GlobalDataSets;
+import com.smithboys.acdaddy.data.LineSegment;
+import com.smithboys.acdaddy.data.Subsection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DataUtil {
     public static void displayLineChart(LineChart mChart, ArrayList<Entry> values, ArrayList<Entry> values2, Context context){
@@ -65,18 +71,287 @@ public class DataUtil {
         set.setFormSize(15.f);
         set.setFillColor(R.color.blue);
 
-//        if (Utils.getSDKInt() >= 18) {
-//            if (setNumber == 1){
-//                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.fade_blue);
-//                set.setFillDrawable(drawable);
-//            } else {
-//                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.fade_red);
-//                set.setFillDrawable(drawable);
-//            }
-//        } else {
-//            set.setFillColor(R.color.white);
-//        }
+        if (Utils.getSDKInt() >= 18) {
+            if (setNumber == 1){
+                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.fade_red);
+                set.setFillDrawable(drawable);
+            } else {
+                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.fade_blue);
+                set.setFillDrawable(drawable);
+            }
+        } else {
+            set.setFillColor(R.color.white);
+        }
         return set;
 
+    }
+
+    public static List<Subsection> getLowestLine(List<Entry> line1, List<Entry> line2){
+
+        System.out.println("Line1 Points: " + line1.toString());
+        System.out.println("Line2 Points: " + line2.toString());
+
+        // create groups of line segments from points
+        ArrayList<LineSegment> lineSegments1 = new ArrayList<>();
+        ArrayList<LineSegment> lineSegments2 = new ArrayList<>();
+
+        for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); }
+        for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); }
+
+        System.out.println("Line1 Segments: " + lineSegments1.toString());
+        System.out.println("Line2 Segments: " + lineSegments2.toString());
+
+        // create list of intersection points
+        ArrayList<Entry> intersectionPoints = new ArrayList<>();
+        for(int i = 0; i < lineSegments1.size(); i++){ for(int j = 0; i < lineSegments2.size(); i++){
+                Entry intersectionPoint = lineSegments1.get(i).findIntersection(lineSegments2.get(j));
+                if (intersectionPoint != null && !intersectionPoints.contains(intersectionPoint)){
+                    intersectionPoints.add(intersectionPoint);
+                    break;
+                }
+            } }
+        System.out.println("Intersection Points: " + intersectionPoints);
+
+        // create new groups of line segments that incorporate intersection points
+        lineSegments1.clear();
+        lineSegments2.clear();
+
+
+        for(int i = 0; i < intersectionPoints.size(); i++){
+            line1.add(intersectionPoints.get(i));
+            line2.add(intersectionPoints.get(i));
+        }
+
+        for (int i = 0; i < line1.size(); i++){
+            for (int j = i + 1; j < line1.size(); j++) {
+                if (line1.get(i).equalTo(line1.get(j))) {
+                    line1.remove(j);
+                    j--;
+                } } }
+        for (int i = 0; i < line2.size(); i++){
+            for (int j = i + 1; j < line2.size(); j++) {
+                if (line2.get(i).equalTo(line2.get(j))) {
+                    line2.remove(j);
+                    j--;
+                } } }
+        Collections.sort(line1, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                if(entry.getX() == t1.getX()){
+                    return 0;
+                } else {
+                    return entry.getX() < t1.getX() ? -1 : 1;
+                }
+            }
+        });
+        Collections.sort(line2, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                if(entry.getX() == t1.getX()){
+                    return 0;
+                } else {
+                    return entry.getX() < t1.getX() ? -1 : 1;
+                }
+            }
+        });
+
+        System.out.println("Line 1 w/ intersection points:" + line1);
+        System.out.println("Line 2 w/ intersection points:" + line2);
+
+        for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); }
+        for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); }
+
+        Collections.sort(lineSegments1);
+        Collections.sort(lineSegments2);
+
+        System.out.println("new segments 1: " + lineSegments1 + ", new segments2: " + lineSegments2);
+
+        ArrayList<Float> checkpointXVals = new ArrayList<>();
+
+        if(line1.get(0).getX() == line2.get(0).getX()){
+            checkpointXVals.add(line1.get(0).getX()); } else {
+            checkpointXVals.add(line1.get(0).getX());
+            checkpointXVals.add(line2.get(0).getX()); }
+
+        for(int i = 0; i < intersectionPoints.size(); i++){ checkpointXVals.add(intersectionPoints.get(i).getX()); }
+        if(lineSegments1.get(0).getStartX() != lineSegments2.get(0).getStartX()){
+            checkpointXVals.add(lineSegments1.get(0).getStartX());
+            checkpointXVals.add(lineSegments2.get(0).getStartX());
+        } else { checkpointXVals.add(lineSegments1.get(0).getStartX()); }
+
+        if(lineSegments1.get(lineSegments1.size()-1).getEndX() != lineSegments2.get(lineSegments2.size()-1).getEndX()){
+            checkpointXVals.add(lineSegments1.get(lineSegments1.size()-1).getEndX());
+            checkpointXVals.add(lineSegments2.get(lineSegments2.size()-1).getEndX());
+        } else { checkpointXVals.add(lineSegments1.get(lineSegments1.size()-1).getEndX()); }
+
+        Set<Float> checkpointsSet = new HashSet<>(checkpointXVals);
+        checkpointXVals.clear();
+        checkpointXVals.addAll(checkpointsSet);
+        Collections.sort(checkpointXVals);
+        System.out.println("Checkpoints (x value): " + checkpointXVals);
+
+        // determine which line to use for each sub-section based on which one is lesser
+        List<Subsection> subsections = new ArrayList<>();
+        for(int i = 0; i < (checkpointXVals.size()-1); i++){
+            Float checkpointStartX = checkpointXVals.get(i);
+            Float checkpointEndX = checkpointXVals.get(i+1);
+            Float y1 = null;
+            Float y2 = null;
+            for (LineSegment ls : lineSegments1){
+                if (((Float)ls.getStartX()).equals(checkpointStartX)){
+                    y1 = ls.getAverageY();
+                }
+            }
+            for (LineSegment ls : lineSegments2){
+                if (((Float)ls.getStartX()).equals(checkpointStartX)){
+                    y2 = ls.getAverageY();
+                }
+            }
+
+            if(y2 == null || y1 < y2){
+                subsections.add(new Subsection(checkpointStartX, checkpointEndX, 1));
+            } else {
+                subsections.add(new Subsection(checkpointStartX, checkpointEndX, 2));
+            }
+        }
+
+        System.out.println("Subsections: " + subsections);
+        System.out.println("Line 1 w/ intersection points:" + line1);
+        System.out.println("Line 2 w/ intersection points:" + line2);
+
+        // assemble the new line based on what line to use for each subsection
+        // for each subsection
+
+        float offset = (float) 0;
+        for(int i = 0; i < subsections.size(); i++){
+            boolean firstPlaced = false;
+            // if the lower line is line 1
+            if(subsections.get(i).getLine() == 1){
+                List<Entry> sectionValues = new ArrayList<>();
+                for (int j = 0; j < line1.size(); j++){
+                    if(i == 0 && !firstPlaced){
+                        System.out.println("adding initial entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
+                        Entry point = line1.get(j);
+                        point.setY(point.getY() + offset);
+                        sectionValues.add(point);
+                        firstPlaced = true;
+                    }
+                    if(line1.get(j).getX() <= subsections.get(i).getEndX() && line1.get(j).getX() > subsections.get(i).getStartX()){
+                        System.out.println("adding entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
+                        Entry point = line1.get(j);
+                        point.setY(point.getY() + offset);
+                        sectionValues.add(point);
+                    }
+                    if (line1.get(j).getX() == subsections.get(i).getEndX()){
+                        break;
+                    } }
+                subsections.get(i).setValues(sectionValues);
+            }
+            if(subsections.get(i).getLine() == 2){
+                List<Entry> sectionValues = new ArrayList<>();
+                for (int j = 0; j < line2.size(); j++){
+                    if(i == 0 && !firstPlaced){
+                        System.out.println("adding initial entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
+                        Entry point = line2.get(j);
+                        point.setY((float) (point.getY() + offset));
+                        sectionValues.add(point);
+                        firstPlaced = true;
+                    }
+                    if(line2.get(j).getX() <= subsections.get(i).getEndX() && line2.get(j).getX() > subsections.get(i).getStartX()){
+                        System.out.println("adding entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
+                        Entry point = line2.get(j);
+                        point.setY((float) (point.getY() + offset));
+                        sectionValues.add(point);
+                    }
+                    if (line2.get(j).getX() == subsections.get(i).getEndX()){
+                        break;
+                    } }
+                subsections.get(i).setValues(sectionValues);
+            }
+        }
+        System.out.println("Lowest Line: ");
+        for(int i = 0; i < subsections.size(); i++){
+            System.out.println(subsections.get(i).getValues().toString());
+        }
+        return subsections;
+
+    }
+
+    public static List<Entry> genTestLine(){
+        List<Entry> dataList = new ArrayList<>();
+        dataList.add(new Entry(1, 49));
+        dataList.add(new Entry((float) 1.5, 74));
+        dataList.add(new Entry(2, 74));
+        dataList.add(new Entry((float) 2.5, 74));
+        dataList.add(new Entry(3, 74));
+        dataList.add(new Entry(4, 74));
+        dataList.add(new Entry(5, 74));
+
+        return dataList;
+    }
+
+    public static List<Subsection> getSubdividedDataSet(LineDataSet dataSet, List<Subsection> referenceLine){
+
+        List<Entry> dataSetValues = dataSet.getValues();
+        System.out.println("DataSet values: " + dataSetValues);
+        List<Float> referenceXValues = new ArrayList<>();
+
+        for(Subsection ss : referenceLine){
+            List<Entry> subsectionValues = ss.getValues();
+            System.out.println("subsection values: " + subsectionValues);
+            for (Entry e : ss.getValues()){
+                referenceXValues.add(e.getX());
+            }
+        }
+
+        System.out.println("reference x values: " + referenceXValues);
+        List<Boolean> isXValueInDataSet = new ArrayList<>();
+        float refXVal;
+        for(int i = 0; i < referenceXValues.size(); i++){
+            refXVal = referenceXValues.get(i);
+            System.out.println("ref x loop running, iteration: " + (i + 1) + " of " + referenceXValues.size());
+
+            for(Entry d : dataSetValues){
+                float dXVal = d.getX();
+                if (dXVal == refXVal){
+                    System.out.println(refXVal + ": true, ");
+                    isXValueInDataSet.set(i, true);
+                    //break;
+                } else {
+                    System.out.println(refXVal + ": false, ");
+                    isXValueInDataSet.set(i, false);
+                }
+                continue;
+            }
+
+            System.out.print("iteration: " + i);
+        }
+
+        // if the x value is in the original data set, leave it. If not, interpolate
+        List<Entry> completeDataValues = new ArrayList<>();
+        for(int i = 0; i < referenceXValues.size(); i++){
+            if(isXValueInDataSet.get(i)){
+                completeDataValues.add(dataSetValues.get(i));
+            } else {
+                LineSegment ls = new LineSegment(dataSetValues.get(i-1) ,dataSetValues.get(i));
+                float refX = referenceXValues.get(i);
+                float pointY = ls.getSlope() * refX + ls.getIntercept();
+                completeDataValues.add(new Entry(refX, pointY));
+            }
+        }
+        // organize data values into subsections
+        List<Subsection> subsections = new ArrayList<>();
+        int totalEntriesAdded = 0;
+        System.out.println("CompleteDataValues: " + completeDataValues);
+        for (int i = 0; i < referenceLine.size(); i++){
+            int count = referenceLine.get(i).getValues().size();
+            List<Entry> sectionEntries = new ArrayList<>();
+            for (int j = 0; j < count; j++){
+                sectionEntries.add(completeDataValues.get(totalEntriesAdded));
+                totalEntriesAdded++;
+            }
+            subsections.add(new Subsection(sectionEntries, referenceLine.get(i).getLine()));
+        }
+        return subsections;
     }
 }

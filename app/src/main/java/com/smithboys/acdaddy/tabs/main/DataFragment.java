@@ -20,6 +20,7 @@ import com.smithboys.acdaddy.R;
 import com.smithboys.acdaddy.util.graphs.DataUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DataFragment extends Fragment {
 
@@ -34,14 +35,17 @@ public class DataFragment extends Fragment {
         final TextView dataText = v.findViewById(R.id.data_text);
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = firebaseDatabase.getReference("Message");
-        myRef.setValue("hello");
+        DatabaseReference myRef = firebaseDatabase.getReference("timedata");
+        //dataText.setText(myRef.);
+        //myRef;
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = snapshot.getValue(String.class);
-                dataText.setText(value);
+                //String value = snapshot.getValue();
+                HashMap data = (HashMap) snapshot.getValue();
+
+                //dataText.setText(snapshot.getValue().toString());
             }
 
             @Override
@@ -57,10 +61,16 @@ public class DataFragment extends Fragment {
         ArrayList<Entry> values = new ArrayList<>();
         values.add(new Entry(1, 50));
         values.add(new Entry(2, 100));
+        values.add(new Entry(3, 50));
+        values.add(new Entry(4, 75));
+        values.add(new Entry(5, 100));
 
         ArrayList<Entry> values2 = new ArrayList<>();
         values2.add(new Entry(1, 75));
         values2.add(new Entry(2, 75));
+        values2.add(new Entry(3, 75));
+        values2.add(new Entry(4, 75));
+        values2.add(new Entry(5, 75));
 
         DataUtil.displayLineChart(lineChart, values, values2, this.getContext());
 
