@@ -67,23 +67,18 @@ public class MyLineLegendRenderer extends LineChartRenderer {
     // This method defines the perimeter of the area to be filled for straight-line (default) data sets.
     private void generateFilledPath(final ILineDataSet dataSet, final int startIndex, final int endIndex, final Path outputPath) {
 
+        System.out.println("fill path start at: " + startIndex + ", end at: " + endIndex);
+        System.out.println("output path: " + outputPath);
+
         final float phaseY = mAnimator.getPhaseY();
-        final Path filled = outputPath; // Not sure if this is required, but this is done in the original code so preserving the same technique here.
-        filled.reset();
 
         //Call the custom method to retrieve the dataSet for other line
 
         LineDataSet otherDataSet;
-        if(dataSet.equals((ILineDataSet)GlobalDataSets.globalDataSet1)){
-            // dataSet is dataSet1, other is dataSet2
-            otherDataSet = GlobalDataSets.getGlobalDataSet2();
-        } else if(dataSet.equals((ILineDataSet)GlobalDataSets.globalDataSet2)){
-            // dataSet is dataSet2, other is dataSet1
-            otherDataSet = GlobalDataSets.getGlobalDataSet1();
-        } else {
-            System.out.println("data set not found");
-            throw new RuntimeException();
-        }
+        if(dataSet.equals((ILineDataSet)GlobalDataSets.globalDataSet1)){ otherDataSet = (LineDataSet) GlobalDataSets.getGlobalDataSet2().copy();
+        } else if(dataSet.equals((ILineDataSet)GlobalDataSets.globalDataSet2)){ otherDataSet = (LineDataSet) GlobalDataSets.getGlobalDataSet1().copy();
+        } else { System.out.println("data set not found"); throw new RuntimeException(); }
+
         System.out.println("Our dataSet: " + dataSet);
         System.out.println("Other dataSet:" + otherDataSet);
 
@@ -95,103 +90,53 @@ public class MyLineLegendRenderer extends LineChartRenderer {
         //final List<Entry> boundaryEntries = otherDataSet.getValues();
 
         List<Subsection> boundaryLineSections = DataUtil.getLowestLine(thisSetsEntries, otherDataSet.getValues());
-        System.out.println("reference line sections:");
-        for(int i = 0; i < boundaryLineSections.size(); i++){
-            System.out.println(boundaryLineSections.get(i).getValues().toString());
-        }
+        System.out.println("lower boundary line sections:");
+        for(int i = 0; i < boundaryLineSections.size(); i++){ System.out.println(boundaryLineSections.get(i).getValues().toString()); }
+
         List<Subsection> dataSetSections = DataUtil.getSubdividedDataSet((LineDataSet) dataSet, boundaryLineSections);
+        System.out.println("our line sections:");
+        for(int i = 0; i < dataSetSections.size(); i++){ System.out.println(dataSetSections.get(i).getValues().toString()); }
 
-        int startSubSectionIndex = 0;
-        int startEntryIndex = 0;
-        int indexesProcessed = 0;
-        for(int i = 0; i < boundaryLineSections.size(); i++){
-            for (int j = 0; j < boundaryLineSections.get(i).getValues().size(); j++){
-                if(indexesProcessed == startIndex){
-                    startSubSectionIndex = i;
-                    startEntryIndex = j;
-                    break;
-                } else { indexesProcessed++; } } }
+        // for each subsection
+        for(int i = 0; i < dataSetSections.size(); i++){
+            Path filled = outputPath;
+//            filled.reset();
+            if(i == 0){
+                Entry firstEntry = dataSetSections.get(0).getValues().get(0);
+                filled.moveTo(firstEntry.getX(), boundaryLineSections.get(0).getValues().get(0).getY());
+                filled.lineTo(firstEntry.getX(), firstEntry.getY() * phaseY);
 
-        int endSubSectionIndex = boundaryLineSections.size() - 1;
-        int endEntryIndex = boundaryLineSections.get(boundaryLineSections.size() - 1).getValues().size() - 1;
-        indexesProcessed = 0;
-        for(int i = 0; i < boundaryLineSections.size(); i++){
-            for (int j = 0; j < boundaryLineSections.get(i).getValues().size(); j++){
-                if(indexesProcessed == endIndex){
-                    endSubSectionIndex = i;
-                    endEntryIndex = j;
-                    break;
-                } else { indexesProcessed++; } } }
-
-        for(int i = 0; i < boundaryLineSections.size(); i++){
-            if (i < startSubSectionIndex){ continue; }
-            if (i > endSubSectionIndex){ break; }
-
-            List<Entry> boundaryEntries = boundaryLineSections.get(i).getValues();
-            List<Entry> dataSetEntries = dataSetSections.get(i).getValues();
-
-            Entry firstDataSetEntry;
-            Entry firstBoundaryEntry;
-
-            if(i == startSubSectionIndex){
-                firstDataSetEntry = dataSetEntries.get(startEntryIndex);
-                firstBoundaryEntry = boundaryEntries.get(startEntryIndex);
-            } else if (i == endSubSectionIndex){
-                firstDataSetEntry = dataSetEntries.get(endEntryIndex);
-                firstBoundaryEntry = boundaryEntries.get(endEntryIndex);
-            } else {
-                firstDataSetEntry = dataSetEntries.get(0);
-                firstBoundaryEntry = boundaryEntries.get(0);
-            }
-
-            // Move down to boundary of first entry
-            filled.reset();
-            filled.moveTo(firstDataSetEntry.getX(), firstBoundaryEntry.getY() * phaseY);
-
-            // Draw line up to value of first entry
-            filled.lineTo(firstDataSetEntry.getX(), firstDataSetEntry.getY() * phaseY);
-
-            // Draw line across to the values of the next entries
-            Entry currentEntry;
-            if(i == startSubSectionIndex){
-                for (int x = startEntryIndex + 1; x <= (dataSetEntries.size()-1); x++) {
-                    currentEntry = boundaryLineSections.get(i).getValues().get(x);
+                Entry currentEntry;
+                for(int j = 1; j < dataSetSections.get(0).getValues().size(); j++){
+                    currentEntry = dataSetSections.get(0).getValues().get(j);
                     filled.lineTo(currentEntry.getX(), currentEntry.getY() * phaseY);
                 }
-            } else if (i == endSubSectionIndex){
-                for (int x = 0 + 1; x <= endEntryIndex; x++) {
-                    currentEntry = boundaryLineSections.get(i).getValues().get(x);
-                    filled.lineTo(currentEntry.getX(), currentEntry.getY() * phaseY);
+                Entry currentBoundary;
+                for(int j = dataSetSections.get(0).getValues().size() - 1; j > 0; j--){
+                    currentBoundary = boundaryLineSections.get(0).getValues().get(j);
+                    filled.lineTo(currentBoundary.getX(), currentBoundary.getY() * phaseY);
                 }
+                filled.close();
             } else {
-                for (int x = 0 + 1; x <= (dataSetEntries.size()-1); x++) {
-                    currentEntry = boundaryLineSections.get(i).getValues().get(x);
+                Entry firstEntry = dataSetSections.get(i-1).getValues().get(dataSetSections.get(i-1).getValues().size() - 1);
+                filled.moveTo(firstEntry.getX(), firstEntry.getY());
+                //filled.lineTo(firstEntry.getX(), firstEntry.getY() * phaseY);
+                System.out.println("move to: " + firstEntry.getX() + ", " + firstEntry.getY());
+
+                Entry currentEntry;
+                for(int j = 0; j < dataSetSections.get(i).getValues().size(); j++){
+                    currentEntry = dataSetSections.get(i).getValues().get(j);
                     filled.lineTo(currentEntry.getX(), currentEntry.getY() * phaseY);
+                    System.out.println("move to: " + currentEntry.getX() + ", " + currentEntry.getY());
                 }
+                Entry currentBoundary;
+                for(int j = dataSetSections.get(i).getValues().size() - 1; j >= 0; j--){
+                    currentBoundary = boundaryLineSections.get(i).getValues().get(j);
+                    filled.lineTo(currentBoundary.getX(), currentBoundary.getY() * phaseY);
+                    System.out.println("move to: " + currentBoundary.getX() + ", " + currentBoundary.getY());
+                }
+                filled.close();
             }
-
-            // Draw down to the boundary value of the last entry, then back to the first boundary value
-            Entry boundaryEntry1;
-            if(i == startSubSectionIndex){
-                for (int x = (dataSetEntries.size()-1) + 1; x > startEntryIndex; x--) {
-                    boundaryEntry1 = boundaryEntries.get(x);
-                    filled.lineTo(boundaryEntry1.getX(), boundaryEntry1.getY() * phaseY);
-                }
-            } else if (i == endSubSectionIndex){
-                for (int x = endEntryIndex; x > 0; x--) {
-                    boundaryEntry1 = boundaryEntries.get(x);
-                    filled.lineTo(boundaryEntry1.getX(), boundaryEntry1.getY() * phaseY);
-                }
-            } else {
-                for (int x = (dataSetEntries.size()-1); x > 0; x--) {
-                    boundaryEntry1 = boundaryEntries.get(x);
-                    filled.lineTo(boundaryEntry1.getX(), boundaryEntry1.getY() * phaseY);
-                }
-            }
-
-            // Join up the perimeter
-            filled.close();
         }
     }
-
 }

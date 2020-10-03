@@ -88,29 +88,36 @@ public class DataUtil {
 
     public static List<Subsection> getLowestLine(List<Entry> line1, List<Entry> line2){
 
-        System.out.println("Line1 Points: " + line1.toString());
-        System.out.println("Line2 Points: " + line2.toString());
-
         // create groups of line segments from points
         ArrayList<LineSegment> lineSegments1 = new ArrayList<>();
         ArrayList<LineSegment> lineSegments2 = new ArrayList<>();
 
-        for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); }
-        for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); }
-
-        System.out.println("Line1 Segments: " + lineSegments1.toString());
-        System.out.println("Line2 Segments: " + lineSegments2.toString());
+        for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); System.out.println("ls1: " + new LineSegment(line1.get(i), line1.get(i+1)));}
+        for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); System.out.println("ls2: " + new LineSegment(line2.get(i), line2.get(i+1)));}
 
         // create list of intersection points
         ArrayList<Entry> intersectionPoints = new ArrayList<>();
-        for(int i = 0; i < lineSegments1.size(); i++){ for(int j = 0; i < lineSegments2.size(); i++){
+        for(int i = 0; i < lineSegments1.size(); i++){ for(int j = 0; j < lineSegments2.size(); j++){
                 Entry intersectionPoint = lineSegments1.get(i).findIntersection(lineSegments2.get(j));
                 if (intersectionPoint != null && !intersectionPoints.contains(intersectionPoint)){
                     intersectionPoints.add(intersectionPoint);
                     break;
                 }
             } }
-        System.out.println("Intersection Points: " + intersectionPoints);
+
+
+        for (int i = 0; i < intersectionPoints.size(); i++){
+            for (int j = i + 1; j < intersectionPoints.size(); j++) {
+                if (intersectionPoints.get(i).equalTo(intersectionPoints.get(j))) {
+                    intersectionPoints.remove(j);
+                    j--;
+                } } }
+
+        System.out.println("intersection points: " + intersectionPoints);
+
+        //System.out.println("intersection points: " + intersectionPoints);
+
+
 
         // create new groups of line segments that incorporate intersection points
         lineSegments1.clear();
@@ -155,8 +162,8 @@ public class DataUtil {
             }
         });
 
-        System.out.println("Line 1 w/ intersection points:" + line1);
-        System.out.println("Line 2 w/ intersection points:" + line2);
+        //System.out.println("Line 1 w/ intersection points:" + line1);
+        //System.out.println("Line 2 w/ intersection points:" + line2);
 
         for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); }
         for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); }
@@ -164,7 +171,7 @@ public class DataUtil {
         Collections.sort(lineSegments1);
         Collections.sort(lineSegments2);
 
-        System.out.println("new segments 1: " + lineSegments1 + ", new segments2: " + lineSegments2);
+        //System.out.println("new segments 1: " + lineSegments1 + ", new segments2: " + lineSegments2);
 
         ArrayList<Float> checkpointXVals = new ArrayList<>();
 
@@ -188,7 +195,7 @@ public class DataUtil {
         checkpointXVals.clear();
         checkpointXVals.addAll(checkpointsSet);
         Collections.sort(checkpointXVals);
-        System.out.println("Checkpoints (x value): " + checkpointXVals);
+        //System.out.println("Checkpoints (x value): " + checkpointXVals);
 
         // determine which line to use for each sub-section based on which one is lesser
         List<Subsection> subsections = new ArrayList<>();
@@ -215,9 +222,9 @@ public class DataUtil {
             }
         }
 
-        System.out.println("Subsections: " + subsections);
-        System.out.println("Line 1 w/ intersection points:" + line1);
-        System.out.println("Line 2 w/ intersection points:" + line2);
+        //System.out.println("Subsections: " + subsections);
+        //System.out.println("Line 1 w/ intersection points:" + line1);
+        //System.out.println("Line 2 w/ intersection points:" + line2);
 
         // assemble the new line based on what line to use for each subsection
         // for each subsection
@@ -230,14 +237,14 @@ public class DataUtil {
                 List<Entry> sectionValues = new ArrayList<>();
                 for (int j = 0; j < line1.size(); j++){
                     if(i == 0 && !firstPlaced){
-                        System.out.println("adding initial entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
+                        //System.out.println("adding initial entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
                         Entry point = line1.get(j);
                         point.setY(point.getY() + offset);
                         sectionValues.add(point);
                         firstPlaced = true;
                     }
                     if(line1.get(j).getX() <= subsections.get(i).getEndX() && line1.get(j).getX() > subsections.get(i).getStartX()){
-                        System.out.println("adding entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
+                        //System.out.println("adding entry: " + line1.get(j) + ", subsection: " + i + ", startx: " + subsections.get(i).getStartX() + ", endx: " + subsections.get(i).getEndX());
                         Entry point = line1.get(j);
                         point.setY(point.getY() + offset);
                         sectionValues.add(point);
@@ -251,14 +258,14 @@ public class DataUtil {
                 List<Entry> sectionValues = new ArrayList<>();
                 for (int j = 0; j < line2.size(); j++){
                     if(i == 0 && !firstPlaced){
-                        System.out.println("adding initial entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
+                        //System.out.println("adding initial entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
                         Entry point = line2.get(j);
                         point.setY((float) (point.getY() + offset));
                         sectionValues.add(point);
                         firstPlaced = true;
                     }
                     if(line2.get(j).getX() <= subsections.get(i).getEndX() && line2.get(j).getX() > subsections.get(i).getStartX()){
-                        System.out.println("adding entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
+                        //System.out.println("adding entry: " + line2.get(j) + ", subsection: " + i + ", startX: " + subsections.get(i).getStartX() + ", endX: " + subsections.get(i).getEndX());
                         Entry point = line2.get(j);
                         point.setY((float) (point.getY() + offset));
                         sectionValues.add(point);
@@ -269,10 +276,7 @@ public class DataUtil {
                 subsections.get(i).setValues(sectionValues);
             }
         }
-        System.out.println("Lowest Line: ");
-        for(int i = 0; i < subsections.size(); i++){
-            System.out.println(subsections.get(i).getValues().toString());
-        }
+        //System.out.println("Lowest Line: ");
         return subsections;
 
     }
@@ -293,47 +297,42 @@ public class DataUtil {
     public static List<Subsection> getSubdividedDataSet(LineDataSet dataSet, List<Subsection> referenceLine){
 
         List<Entry> dataSetValues = dataSet.getValues();
-        System.out.println("DataSet values: " + dataSetValues);
+        //System.out.println("DataSet values: " + dataSetValues);
         List<Float> referenceXValues = new ArrayList<>();
 
         for(Subsection ss : referenceLine){
             List<Entry> subsectionValues = ss.getValues();
-            System.out.println("subsection values: " + subsectionValues);
+            //System.out.println("subsection values: " + subsectionValues);
             for (Entry e : ss.getValues()){
                 referenceXValues.add(e.getX());
             }
         }
 
-        System.out.println("reference x values: " + referenceXValues);
-        List<Boolean> isXValueInDataSet = new ArrayList<>();
+        //System.out.println("reference x values: " + referenceXValues);
+        int[] isXValArray = new int[referenceXValues.size()];
+        for(int i = 0; i<isXValArray.length; i++){
+            isXValArray[i] = 0;
+        }
         float refXVal;
         for(int i = 0; i < referenceXValues.size(); i++){
             refXVal = referenceXValues.get(i);
-            System.out.println("ref x loop running, iteration: " + (i + 1) + " of " + referenceXValues.size());
-
-            for(Entry d : dataSetValues){
-                float dXVal = d.getX();
-                if (dXVal == refXVal){
-                    System.out.println(refXVal + ": true, ");
-                    isXValueInDataSet.set(i, true);
-                    //break;
-                } else {
-                    System.out.println(refXVal + ": false, ");
-                    isXValueInDataSet.set(i, false);
+            for (int j = 0; j<dataSetValues.size(); j++){
+                if(dataSetValues.get(j).getX() == (float) referenceXValues.get(i)){
+                    isXValArray[i] = 1;
+                    break;
                 }
-                continue;
             }
-
-            System.out.print("iteration: " + i);
         }
 
         // if the x value is in the original data set, leave it. If not, interpolate
         List<Entry> completeDataValues = new ArrayList<>();
         for(int i = 0; i < referenceXValues.size(); i++){
-            if(isXValueInDataSet.get(i)){
-                completeDataValues.add(dataSetValues.get(i));
+            if(isXValArray[i] == 1){
+                completeDataValues.add(dataSetValues.get(getEntryIndexByX(dataSetValues, referenceXValues.get(i))));
             } else {
-                LineSegment ls = new LineSegment(dataSetValues.get(i-1) ,dataSetValues.get(i));
+                LineSegment ls = new LineSegment(dataSetValues.get(getEntryIndexByX(dataSetValues, referenceXValues.get(getLastRefXInValuesIndex(i, isXValArray)))),
+                        dataSetValues.get(getEntryIndexByX(dataSetValues, referenceXValues.get(getNextRefXInValuesIndex(i, isXValArray)))));
+                //System.out.println("Line Segment: " + ls);
                 float refX = referenceXValues.get(i);
                 float pointY = ls.getSlope() * refX + ls.getIntercept();
                 completeDataValues.add(new Entry(refX, pointY));
@@ -342,16 +341,48 @@ public class DataUtil {
         // organize data values into subsections
         List<Subsection> subsections = new ArrayList<>();
         int totalEntriesAdded = 0;
-        System.out.println("CompleteDataValues: " + completeDataValues);
+        //System.out.println("CompleteDataValues: " + completeDataValues);
+        //System.out.println("Num Sub Sections: " + referenceLine.size());
         for (int i = 0; i < referenceLine.size(); i++){
             int count = referenceLine.get(i).getValues().size();
+            int limit = count + totalEntriesAdded;
             List<Entry> sectionEntries = new ArrayList<>();
-            for (int j = 0; j < count; j++){
-                sectionEntries.add(completeDataValues.get(totalEntriesAdded));
+            for (int j = totalEntriesAdded; j < limit; j++){
+                sectionEntries.add(completeDataValues.get(j));
                 totalEntriesAdded++;
             }
+            //System.out.println("subsection entries:" + sectionEntries);
             subsections.add(new Subsection(sectionEntries, referenceLine.get(i).getLine()));
         }
         return subsections;
     }
+
+    public static int getEntryIndexByX(List<Entry> entries, float targetX){
+        int returnIndex = -1;
+        for(int i = 0; i < entries.size(); i++){
+            if(entries.get(i).getX() == targetX){
+                returnIndex = i;
+                break;
+            }
+        }
+        return returnIndex;
+    }
+    public static int getNextRefXInValuesIndex(int refXIndex, int[] isXValArray){
+        for(int i = refXIndex; i < isXValArray.length; i++){
+            if(isXValArray[i] == 1){
+                //System.out.println("nextIndex: " + i);
+                return i;
+            }
+        } return -1;
+    }
+
+    public static int getLastRefXInValuesIndex(int refXIndex, int[] isXValArray){
+        for(int i = refXIndex; i >= 0; i--){
+            if(isXValArray[i] == 1){
+                //System.out.println("lastIndex: " + i);
+                return i;
+            }
+        } return -1;
+    }
+
 }

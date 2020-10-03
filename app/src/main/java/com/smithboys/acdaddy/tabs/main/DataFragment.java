@@ -59,18 +59,18 @@ public class DataFragment extends Fragment {
         lineChart.setPinchZoom(false);
 
         ArrayList<Entry> values = new ArrayList<>();
-        values.add(new Entry(1, 50));
-        values.add(new Entry(2, 100));
-        values.add(new Entry(3, 50));
-        values.add(new Entry(4, 75));
-        values.add(new Entry(5, 100));
+        values.add(new Entry(1, 1));
+        values.add(new Entry(2, 2));
+        values.add(new Entry(3, 3));
+        values.add(new Entry(4, 4));
+        values.add(new Entry(5, 5));
 
         ArrayList<Entry> values2 = new ArrayList<>();
-        values2.add(new Entry(1, 75));
-        values2.add(new Entry(2, 75));
-        values2.add(new Entry(3, 75));
-        values2.add(new Entry(4, 75));
-        values2.add(new Entry(5, 75));
+        values2.add(new Entry(1, 5));
+        values2.add(new Entry(2, 4));
+        values2.add(new Entry(3, 2));
+        values2.add(new Entry(4, 1));
+        values2.add(new Entry(5, 0));
 
         DataUtil.displayLineChart(lineChart, values, values2, this.getContext());
 
