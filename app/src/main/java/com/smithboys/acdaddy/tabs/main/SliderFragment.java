@@ -4,9 +4,12 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,8 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
@@ -30,7 +35,7 @@ public class SliderFragment extends Fragment {
     TextView textView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.slider_tab_layout, container, false);
 
         seekBar = v.findViewById(R.id.seek_bar);
@@ -38,14 +43,11 @@ public class SliderFragment extends Fragment {
         final Switch acSwitch = v.findViewById(R.id.toggle_ac);
 
 
-        acSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // Code to set AC to the current slider value
-                } else {
-                    // Code to turn AC off until turned back on through switch or schedule
-                }
+        acSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // Set on AND update temperature, DesiredTempUtil.desiredTemp
+            } else {
+                // Set off
             }
         });
 
@@ -62,11 +64,11 @@ public class SliderFragment extends Fragment {
                 }
 
                 if (acSwitch.isChecked()) {
-                    // Send code to update hardware here, using var degrees
+                    // Send code to update hardware here. Get temp with DesiredTempUtil.desiredTemp
+                    // only temperature
                 }
 
                 // Change colors here
-                int c = DesiredTempUtil.getColor();
                 int[][] states = new int[][] {
                         new int[] {-android.R.attr.state_checked},
                         new int[] {android.R.attr.state_checked},
@@ -74,20 +76,22 @@ public class SliderFragment extends Fragment {
 
                 int[] thumbColors = new int[] {
                         getResources().getColor(R.color.gray),
-                        c
+                        DesiredTempUtil.getColor()
                 };
 
                 int[] trackColors = new int[] {
-                        getResources().getColor(R.color.gray),
-                        DesiredTempUtil.getColorFaded()
+                        DesiredTempUtil.getColorFaded(),
+                        getResources().getColor(R.color.gray)
                 };
 
                 Switch toggleAc = v.findViewById(R.id.toggle_ac);
                 DrawableCompat.setTintList(DrawableCompat.wrap(toggleAc.getThumbDrawable()), new ColorStateList(states, thumbColors));
                 DrawableCompat.setTintList(DrawableCompat.wrap(toggleAc.getTrackDrawable()), new ColorStateList(states, thumbColors));
-                ((TextView)v.findViewById(R.id.current_number)).setTextColor(c);
-                // TODO Drawable d = getResources().getDrawable(R.drawable.slider_track);
-
+                ((TextView)v.findViewById(R.id.current_number)).setTextColor(DesiredTempUtil.getColor());
+                LayerDrawable d = (LayerDrawable) (ResourcesCompat.getDrawable(getResources(), R.drawable.slider_track, null));
+                assert d != null;
+                Drawable progressDrawable = d.getDrawable(1);
+                DrawableCompat.setTintList(DrawableCompat.wrap(progressDrawable), new ColorStateList(states, trackColors));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -97,11 +101,4 @@ public class SliderFragment extends Fragment {
 
         return v;
     }
-
-    public static SliderFragment newInstance(){
-        SliderFragment f = new SliderFragment();
-        return f;
-    }
-
-
 }
