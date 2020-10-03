@@ -60,7 +60,7 @@ public class LineSegment implements Comparable<LineSegment>{
 
         Entry intersection = new Entry((float)intersectionX, (float)intersectionY);
         //System.out.println("intersection point: " + intersection);
-        if(this.checkIfInXBounds(intersection)){
+        if(this.checkIfInXBounds(intersection) && otherSegment.checkIfInXBounds(intersection)){
             return intersection;
         } else {
             return null;
