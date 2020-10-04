@@ -60,6 +60,18 @@ public class SliderFragment extends Fragment {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference myRef = firebaseDatabase.getReference("config");
+        DatabaseReference currentTempRef = firebaseDatabase.getReference("currentTemp");
+
+        currentTempRef.child("temp").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currentNumber.setText(((String) snapshot.getValue()).substring(0,4));
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("Reading current temp failed");
+            }
+        });
 
         myRef.child("desiredTemp").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -101,6 +113,7 @@ public class SliderFragment extends Fragment {
                 }
 
                 if (acSwitch.isChecked()) {
+                    myRef.child("onOrOff").setValue("2");
                     myRef.child("desiredTemp").setValue(DesiredTempUtil.desiredTemp);
                 }
 
