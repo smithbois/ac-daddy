@@ -56,8 +56,6 @@ public class SliderFragment extends Fragment {
         context = this.getContext();
         currentNumber = v.findViewById(R.id.current_number);
 
-        //seekBar.setColo
-
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference myRef = firebaseDatabase.getReference("config");
         DatabaseReference currentTempRef = firebaseDatabase.getReference("currentTemp");
@@ -76,7 +74,7 @@ public class SliderFragment extends Fragment {
         myRef.child("desiredTemp").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DesiredTempUtil.desiredTemp = snapshot.getValue(int.class);
+                DesiredTempUtil.desiredTemp = Integer.valueOf(snapshot.getValue(String.class));
                 seekBar.setProgress(DesiredTempUtil.desiredTemp * 1000 - 60000);
                 updateTextAndSlider();
             }
@@ -92,7 +90,7 @@ public class SliderFragment extends Fragment {
             System.out.println("Is switch checked?" + isChecked);
             if(isChecked){
                 myRef.child("onOrOff").setValue("1");
-                myRef.child("desiredTemp").setValue(DesiredTempUtil.desiredTemp);
+                myRef.child("desiredTemp").setValue(String.valueOf(DesiredTempUtil.desiredTemp));
             } else {
                 myRef.child("onOrOff").setValue("0");
             }
@@ -114,7 +112,8 @@ public class SliderFragment extends Fragment {
 
                 if (acSwitch.isChecked()) {
                     myRef.child("onOrOff").setValue("2");
-                    myRef.child("desiredTemp").setValue(DesiredTempUtil.desiredTemp);
+                    System.out.println(DesiredTempUtil.desiredTemp);
+                    myRef.child("desiredTemp").setValue(String.valueOf(DesiredTempUtil.desiredTemp));
                 }
 
                 updateTextAndSlider();

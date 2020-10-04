@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 
 import com.smithboys.acdaddy.R;
 import com.smithboys.acdaddy.util.OnOffAtTime;
-import com.smithboys.acdaddy.util.TalkToDevice;
 
 import java.util.Calendar;
 
