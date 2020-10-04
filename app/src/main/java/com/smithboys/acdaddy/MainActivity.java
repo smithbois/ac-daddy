@@ -5,11 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -25,7 +21,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.smithboys.acdaddy.adapters.MainTabPagerAdapter;
 import com.smithboys.acdaddy.dialogs.SettingsDialog;
 import com.smithboys.acdaddy.tabs.main.DataFragment;
-import com.smithboys.acdaddy.tabs.main.DialFragment;
+import com.smithboys.acdaddy.tabs.main.SliderFragment;
 import com.smithboys.acdaddy.tabs.main.ScheduleFragment;
 import com.smithboys.acdaddy.util.LayoutUtil;
 
@@ -42,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
 
     ScheduleFragment scheduleTab;
-    DialFragment dialTab;
+    SliderFragment dialTab;
     DataFragment dataTab;
 
     NavigationView navigationView;
@@ -76,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutUtil.setupTabIcons(tabLayout, tabIcons);
 
         scheduleTab = (ScheduleFragment) ((MainTabPagerAdapter)viewPager.getAdapter()).getFragment(0);
-        dialTab = (DialFragment) ((MainTabPagerAdapter)viewPager.getAdapter()).getFragment(1);
+        dialTab = (SliderFragment) ((MainTabPagerAdapter)viewPager.getAdapter()).getFragment(1);
         dataTab = (DataFragment) ((MainTabPagerAdapter)viewPager.getAdapter()).getFragment(2);
 
         System.out.println(dialTab);
