@@ -1,7 +1,9 @@
 package com.smithboys.acdaddy.util.graphs;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.DashPathEffect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
@@ -76,9 +78,12 @@ public class DataUtil {
             mChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
             mChart.getXAxis().setTextColor(ContextCompat.getColor(context, R.color.white));
             mChart.getAxisLeft().setTextColor(ContextCompat.getColor(context, R.color.white));
-            mChart.getAxisRight().setTextColor(ContextCompat.getColor(context, R.color.white));
+            mChart.getAxisRight().setEnabled(false);
             mChart.getLegend().setEnabled(false);
             mChart.getDescription().setEnabled(false);
+            mChart.getXAxis().setTypeface(Typeface.SANS_SERIF);
+            mChart.getAxisLeft().setTypeface(Typeface.SANS_SERIF);
+            mChart.getAxisRight().setTypeface(Typeface.SANS_SERIF);
             mChart.setData(data);
         }
     }
@@ -110,7 +115,7 @@ public class DataUtil {
         set.setFormLineWidth(1f);
         set.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
         set.setFormSize(15.f);
-        set.setFillColor(R.color.blue);
+        //set.setFillColor(R.color.blue);
 
         if (Utils.getSDKInt() >= 18) {
             if (setNumber == 1){

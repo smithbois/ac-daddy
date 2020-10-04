@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
@@ -28,12 +29,14 @@ import com.smithboys.acdaddy.util.LayoutUtil;
 // This activity contains the main tabs of the app
 
 public class MainActivity extends AppCompatActivity {
-    TabLayout tabLayout;
+    public static TabLayout tabLayout;
     ViewPager2 viewPager;
-    Toolbar toolbar;
+    public static Toolbar toolbar;
     ImageButton settingsButton;
     private int[] tabIcons = {
-            // place tabIcons here, ie: R.drawable.house
+            R.drawable.ic_baseline_timer_24,
+            R.drawable.ic_baseline_ac_unit_24,
+            R.drawable.ic_baseline_show_chart_24
     };
     Context context;
 
@@ -61,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager,
                 new TabLayoutMediator.TabConfigurationStrategy() {
                     @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                        switch(position){
+                        switch(tab.getPosition()){
                             case 0: tab.setText("Schedule");
-                            case 1: tab.setText("Dial");
+                            case 1: tab.setText("Set");
                             case 2: tab.setText("Data");
                         }
                     }
@@ -81,13 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
         // set up the top toolbar
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("AC Daddy");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.home_icon);
+        actionBar.setTitle("AC Daddy");
+
 
         // I can't figure out how to set a title for the toolbar
         //toolbar.setTitle("");

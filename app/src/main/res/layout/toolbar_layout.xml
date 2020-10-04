@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/gray"
+    android:background="@color/default_color"
     android:elevation="4dp"
     android:theme="@style/AppTheme"
     app:title="AC Daddy">
@@ -14,16 +13,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/roboto"
+            android:text="AC Daddy"
+            android:textColor="@color/white"
+            android:textSize="25sp" />
+
         <ImageButton
+            android:id="@+id/settings_button"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_alignParentStart="false"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:background="@android:drawable/ic_menu_preferences"
-            android:elevation="6dp"
-            android:id="@+id/settings_button"/>
+            android:background="@drawable/ic_baseline_settings_24"
+            android:backgroundTint="#FFFFFF"
+            android:elevation="6dp" />
 
 
     </RelativeLayout>
