@@ -7,9 +7,12 @@ import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.smithboys.acdaddy.R;
@@ -26,19 +29,38 @@ import java.util.Set;
 
 public class DataUtil {
     public static void displayLineChart(LineChart mChart, ArrayList<Entry> values, ArrayList<Entry> values2, Context context){
+        for (int i = 0; i < values.size(); i++){
+            for (int j = i + 1; j < values.size(); j++) {
+                if (values.get(i).equalTo(values.get(j))) {
+                    values.remove(j);
+                    j--;
+                } } }
+        for (int i = 0; i < values2.size(); i++){
+            for (int j = i + 1; j < values2.size(); j++) {
+                if (values2.get(i).equalTo(values2.get(j))) {
+                    values2.remove(j);
+                    j--;
+                } } }
+        System.out.println("chart values: " + values);
         LineDataSet set1, set2;
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
+            System.out.println("current data:" + mChart.getData().getEntryCount());
             set1 = (LineDataSet) mChart.getData().getDataSetByIndex(0);
             set2 = (LineDataSet) mChart.getData().getDataSetByIndex(1);
             set1.setValues(values);
             set2.setValues(values2);
+            GlobalDataSets.setGlobalDataSet1(set1);
+            GlobalDataSets.setGlobalDataSet2(set2);
+            set1.setFillFormatter(new MyFillFormatter(set2));
+            mChart.setRenderer(new MyLineLegendRenderer(mChart, mChart.getAnimator(), mChart.getViewPortHandler()));
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
             set1 = formatDataSet(context, values, 1);
+            set1.setLabel("Actual Temp °F");
             set2 = formatDataSet(context, values2, 2);
-
+            set2.setLabel("Set Temp °F");
             GlobalDataSets.setGlobalDataSet1(set1);
             GlobalDataSets.setGlobalDataSet2(set2);
 
@@ -50,19 +72,38 @@ public class DataUtil {
             dataSets.add(set2);
 
             LineData data = new LineData(dataSets);
+            mChart.getXAxis().setValueFormatter(new MyXAxisValueFormatter());
+            mChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+            mChart.getXAxis().setTextColor(ContextCompat.getColor(context, R.color.white));
+            mChart.getAxisLeft().setTextColor(ContextCompat.getColor(context, R.color.white));
+            mChart.getAxisRight().setTextColor(ContextCompat.getColor(context, R.color.white));
+            mChart.getLegend().setEnabled(false);
+            mChart.getDescription().setEnabled(false);
             mChart.setData(data);
         }
     }
 
     private static LineDataSet formatDataSet(Context context, ArrayList<Entry> values, int setNumber){
+        System.out.println("sample values0: " + values);
+        Collections.sort(values, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                if(entry.getX() == t1.getX()){
+                    return 0;
+                } else {
+                    return entry.getX() < t1.getX() ? -1 : 1;
+                }
+            }
+        });
         LineDataSet set = new LineDataSet(values, "Sample Data");
+        System.out.println("sample values1: " + values);
         set.setDrawIcons(false);
         //set.enableDashedLine(10f, 5f, 0f);
         //set.enableDashedHighlightLine(10f, 5f, 0f);
         set.setColor(ContextCompat.getColor(context, R.color.white));
         set.setCircleColor(ContextCompat.getColor(context, R.color.white));
         set.setLineWidth(1f);
-        set.setCircleRadius(3f);
+        set.setDrawCircles(false);
         set.setDrawCircleHole(false);
         set.setValueTextSize(9f);
         set.setDrawFilled(true);
@@ -92,8 +133,21 @@ public class DataUtil {
         ArrayList<LineSegment> lineSegments1 = new ArrayList<>();
         ArrayList<LineSegment> lineSegments2 = new ArrayList<>();
 
-        for(int i = 0; i < (line1.size() - 1); i++){ lineSegments1.add(new LineSegment(line1.get(i), line1.get(i+1))); System.out.println("ls1: " + new LineSegment(line1.get(i), line1.get(i+1)));}
-        for(int i = 0; i < (line2.size() - 1); i++) { lineSegments2.add(new LineSegment(line2.get(i), line2.get(i+1))); System.out.println("ls2: " + new LineSegment(line2.get(i), line2.get(i+1)));}
+        for(int i = 0; i < (line1.size() - 1); i++){
+            LineSegment ls1 = new LineSegment(line1.get(i), line1.get(i+1));
+            if(line1.get(i).getX() != line1.get(i+1).getX()){
+                lineSegments1.add(ls1);
+                //System.out.println("ls1: " + ls1 );
+            }
+        }
+        for(int i = 0; i < (line2.size() - 1); i++) {
+            LineSegment ls2 = new LineSegment(line2.get(i), line2.get(i+1));
+            if(line2.get(i).getX() != line2.get(i+1).getX()) {
+                lineSegments2.add(ls2);
+                //System.out.println("ls2: " + ls2);
+            }
+
+        }
 
         // create list of intersection points
         ArrayList<Entry> intersectionPoints = new ArrayList<>();
@@ -383,6 +437,14 @@ public class DataUtil {
                 return i;
             }
         } return -1;
+    }
+
+    public static void resetChart(LineChart mChart) {
+        mChart.fitScreen();
+        mChart.getXAxis().setValueFormatter(null);
+        mChart.notifyDataSetChanged();
+        mChart.clear();
+        mChart.invalidate();
     }
 
 }
