@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/data_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_black"
+        android:gravity="center"
+        android:paddingStart="17sp"
+        android:paddingLeft="17sp"
+        android:paddingTop="49sp"
+        android:paddingEnd="17sp"
+        android:paddingRight="17sp"
+        android:paddingBottom="34sp"
+        android:text="Temperature \n History:"
+        android:textColor="@color/white"
+        android:textSize="31sp" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginStart="17sp"
+        android:layout_marginLeft="17sp"
+        android:layout_marginEnd="17sp"
+        android:layout_marginRight="17sp" />
+
+</LinearLayout>
