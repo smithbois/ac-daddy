@@ -1,4 +1,4 @@
 ![Demo](screenshot.PNG)
 # AC Daddy
-❄️Achieve thermostatic control, remote control, and temperature scheduling with dormitory air conditioners.\
+A mobile app and IoT device for remote thermostat control and temperature scheduling of dormitory air conditioners. 2nd Place in Flowers Invention Studio Hackathon 2020.\
 [View demo](https://devpost.com/software/ac-daddy)
